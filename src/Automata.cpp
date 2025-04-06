@@ -1,3 +1,4 @@
+// Copyright 2022 UNN-IASR
 #include "Automata.h"
 #include <iostream>
 #include <string>
@@ -6,8 +7,7 @@ void Automata::on() {
     if (state == OFF) {
         state = WAIT;
         getState();
-    }
-    else {
+    } else {
         std::cout << "Machine is already working\n";
     }
 }
@@ -16,8 +16,7 @@ void Automata::off() {
         change();
         state = OFF;
         getState();
-    }
-    else {
+    } else {
         if (state != OFF) {
             std::cout << "Machine is working, pls wait\n";
         }
@@ -28,8 +27,7 @@ void Automata::coin(int money) {
         cash += money;
         state = ACCEPT;
         getState();
-    }
-    else {
+    } else {
         std::cout << "Unable to do this action now\n";
     }
 }
@@ -38,8 +36,7 @@ void Automata::choice(std::string drink) {
         if (find(menu.begin(), menu.end(), drink) == menu.end()) {
             std::cout << "Unable to make this drink";
             cancel();
-        }
-        else {
+        } else {
             state = CHECK;
             getState();
             check(drink);
@@ -68,13 +65,11 @@ void Automata::check(std::string drink) {
         if (cash < price_of_coffee) {
             std::cout << "No money, top up your balance\n";
             cancel();
-        }
-        else {
+        } else {
             cash -= price_of_coffee;
             cook();
         }
-    }
-    else {
+    } else {
         std::cout << "Ivalid state";
     }
 }
