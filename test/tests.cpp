@@ -7,33 +7,33 @@ TEST(AutomataTest, InitialStateIsOFF) {
     Automata a = Automata();
     ASSERT_EQ(STATES::OFF, a.getState());
 }
-  
+
 TEST(AutomataTest, CannotInsertCoinWhenOFF) {
     Automata a = Automata();
     a.coin(10);
     ASSERT_EQ(STATES::OFF, a.getState());
     ASSERT_EQ(0, a.getCash());
 }
-  
+
 TEST(AutomataTest, CannotChooseDrinkWhenOFF) {
     Automata a = Automata();
     a.choice("Cappucino");
     ASSERT_EQ(STATES::OFF, a.getState());
 }
-  
+
 TEST(AutomataTest, CannotCancelWhenOFF) {
     Automata a = Automata();
     a.cancel();
     ASSERT_EQ(STATES::OFF, a.getState());
     ASSERT_EQ(0, a.getCash());
 }
-  
+
 TEST(AutomataTest, TurnONTheAutomata) {
     Automata a = Automata();
     a.on();
     ASSERT_EQ(STATES::WAIT, a.getState());
 }
-  
+
 TEST(AutomataTest, InsertFirstCoinInWAITState) {
     Automata a = Automata();
     a.on();
@@ -41,7 +41,7 @@ TEST(AutomataTest, InsertFirstCoinInWAITState) {
     ASSERT_EQ(STATES::ACCEPT, a.getState());
     ASSERT_EQ(50, a.getCash());
 }
-  
+
 TEST(AutomataTest, InsertMultipleCoinsInWAITState) {
     Automata a;
     a.on();
@@ -50,7 +50,7 @@ TEST(AutomataTest, InsertMultipleCoinsInWAITState) {
     ASSERT_EQ(STATES::ACCEPT, a.getState());
     ASSERT_EQ(50, a.getCash());
 }
-  
+
 TEST(AutomataTest, CancelInWAITStateNoCoins) {
     Automata a = Automata();
     a.on();
@@ -58,7 +58,7 @@ TEST(AutomataTest, CancelInWAITStateNoCoins) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(0, a.getCash());
 }
-  
+
 TEST(AutomataTest, CancelInWAITStateWithCoins) {
     Automata a = Automata();
     a.on();
@@ -67,14 +67,14 @@ TEST(AutomataTest, CancelInWAITStateWithCoins) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(50, a.getCash());
 }
-  
+
 TEST(AutomataTest, ChooseDrinkInWAITStateNoCoins) {
     Automata a = Automata();
     a.on();
     a.choice("Cappucino");
     ASSERT_EQ(STATES::WAIT, a.getState());
 }
-  
+
 TEST(AutomataTest, InsertCoinAfterTurnONGoesToACCEPT) {
     Automata a = Automata();
     a.on();
@@ -82,7 +82,7 @@ TEST(AutomataTest, InsertCoinAfterTurnONGoesToACCEPT) {
     ASSERT_EQ(STATES::ACCEPT, a.getState());
     ASSERT_EQ(70, a.getCash());
 }
-  
+
 TEST(AutomataTest, InsertMoreCoinsInACCEPTState) {
     Automata a = Automata();
     a.on();
@@ -91,7 +91,7 @@ TEST(AutomataTest, InsertMoreCoinsInACCEPTState) {
     ASSERT_EQ(STATES::ACCEPT, a.getState());
     ASSERT_EQ(100, a.getCash());
 }
-  
+
 TEST(AutomataTest, CancelInACCEPTState) {
     Automata a = Automata();
     a.on();
@@ -100,7 +100,7 @@ TEST(AutomataTest, CancelInACCEPTState) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(80, a.getCash());
 }
-  
+
 TEST(AutomataTest, ChooseValidDrinkInACCEPTState) {
     Automata a = Automata();
     a.on();
@@ -110,7 +110,7 @@ TEST(AutomataTest, ChooseValidDrinkInACCEPTState) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(0, a.getCash());
 }
-  
+
 TEST(AutomataTest, ChooseInvalidDrinkInACCEPTState) {
     Automata a = Automata();
     a.on();
@@ -119,7 +119,7 @@ TEST(AutomataTest, ChooseInvalidDrinkInACCEPTState) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(100, a.getCash());
 }
-  
+
 TEST(AutomataTest, CheckBalanceSufficientFundsGoesToCOOK) {
     Automata a = Automata();
     a.on();
@@ -137,7 +137,7 @@ TEST(AutomataTest, FullCycleExactChangeEspresso) {
     ASSERT_EQ(STATES::WAIT, a.getState());
     ASSERT_EQ(80, a.getCash());
 }
-  
+
 TEST(AutomataTest, TurnOFFFromWAITState) {
     Automata a = Automata();
     a.on();
@@ -145,7 +145,7 @@ TEST(AutomataTest, TurnOFFFromWAITState) {
     ASSERT_EQ(STATES::OFF, a.getState());
     ASSERT_EQ(0, a.getCash());
 }
-  
+
 TEST(AutomataTest, TryTurnOFFFromACCEPTState) {
     Automata a = Automata();
     a.on();
@@ -154,7 +154,7 @@ TEST(AutomataTest, TryTurnOFFFromACCEPTState) {
     ASSERT_EQ(STATES::ACCEPT, a.getState());
     ASSERT_EQ(100, a.getCash());
 }
-  
+
 TEST(AutomataTest, TryTurnOFFFromOFFState) {
     Automata a = Automata();
     a.off();
