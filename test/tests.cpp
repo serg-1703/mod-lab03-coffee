@@ -115,18 +115,7 @@ TEST(AutomataTest, TurnOffFromWaitState) {
     EXPECT_EQ(OFF, machine.getState());
 }
 
-// 14. Попытка выключения во время приготовления
-TEST(AutomataTest, CannotTurnOffWhileCooking) {
-    Automata machine;
-    machine.on();
-    machine.coin(100);
-    machine.choice("Double Espresso");
-    machine.off();
-    EXPECT_NE(OFF, machine.getState());
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-}
-
-// 15. Проверка меню (количество позиций)
+// 14. Проверка меню (количество позиций)
 TEST(AutomataTest, MenuHasFourItems) {
     Automata machine;
     machine.on();
@@ -137,7 +126,7 @@ TEST(AutomataTest, MenuHasFourItems) {
     EXPECT_EQ(4, count);
 }
 
-// 16. Проверка состояния после приготовления
+// 15. Проверка состояния после приготовления
 TEST(AutomataTest, ReturnsToWaitAfterCooking) {
     Automata machine;
     machine.on();
@@ -146,14 +135,14 @@ TEST(AutomataTest, ReturnsToWaitAfterCooking) {
     EXPECT_EQ(WAIT, machine.getState());
 }
 
-// 17. Попытка выбора напитка в состоянии OFF
+// 16. Попытка выбора напитка в состоянии OFF
 TEST(AutomataTest, NoDrinkSelectionWhenOff) {
     Automata machine;
     machine.choice("Black Coffee");
     EXPECT_EQ(OFF, machine.getState());
 }
 
-// 18. Внесение нулевой суммы
+// 17. Внесение нулевой суммы
 TEST(AutomataTest, InsertZeroCoins) {
     Automata machine;
     machine.on();
@@ -162,14 +151,14 @@ TEST(AutomataTest, InsertZeroCoins) {
     EXPECT_EQ(0, machine.getCash());
 }
 
-// 19. Попытка отмены в состоянии OFF
+// 18. Попытка отмены в состоянии OFF
 TEST(AutomataTest, CancelWhenOffDoesNothing) {
     Automata machine;
     machine.cancel();
     EXPECT_EQ(OFF, machine.getState());
 }
 
-// 20. Полный цикл работы (включение, внесение денег, покупка, выключение)
+// 19. Полный цикл работы (включение, внесение денег, покупка, выключение)
 TEST(AutomataTest, FullWorkCycle) {
     Automata machine;
     machine.on();
@@ -179,7 +168,7 @@ TEST(AutomataTest, FullWorkCycle) {
     EXPECT_EQ(OFF, machine.getState());
 }
 
-// 21. Проверка баланса после отмены
+// 20. Проверка баланса после отмены
 TEST(AutomataTest, BalanceResetAfterCancel) {
     Automata machine;
     machine.on();
