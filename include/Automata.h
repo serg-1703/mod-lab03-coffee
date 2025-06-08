@@ -8,13 +8,7 @@
 #include <chrono>
 #include <thread>
 
-enum STATES { 
-    OFF, 
-    WAIT, 
-    ACCEPT, 
-    CHECK, 
-    COOK 
-};
+enum STATES { OFF, WAIT, ACCEPT, CHECK, COOK };
 
 class Automata {
  public:
@@ -39,5 +33,4 @@ class Automata {
     void finish();
     void returnChange();
 };
-
 #endif  // INCLUDE_AUTOMATA_H_
