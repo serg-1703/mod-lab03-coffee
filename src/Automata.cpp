@@ -1,6 +1,7 @@
 // Copyright 2022 UNN-IASR
 #include "Automata.h"
 #include <iostream>
+#include <string>
 
 Automata::Automata() {
     cash = 0;

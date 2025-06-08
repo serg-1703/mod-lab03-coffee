@@ -1,6 +1,7 @@
 // Copyright 2022 GHA Test Team
 #include <gtest/gtest.h>
 #include "Automata.h"
+#include <string>
 
 // 1. Проверка начального состояния
 TEST(AutomataTest, InitialStateIsOff) {
