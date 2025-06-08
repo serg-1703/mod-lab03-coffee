@@ -1,101 +1,109 @@
 // Copyright 2022 UNN-IASR
 #include "Automata.h"
 #include <iostream>
-#include <string>
+
+Automata::Automata() {
+    cash = 0;
+    state = OFF;
+    menu = {"Black Coffee", "Green Tea", "Hot Chocolate", "Double Espresso"};
+    prices = {80, 70, 90, 100};
+}
 
 void Automata::on() {
     if (state == OFF) {
         state = WAIT;
-        getState();
+        std::cout << "Automata is now ON.\n";
     } else {
-        std::cout << "Machine is already working\n";
+        std::cout << "Automata is already running.\n";
     }
 }
+
 void Automata::off() {
     if (state == WAIT) {
-        change();
+        returnChange();
         state = OFF;
-        getState();
+        std::cout << "Automata is now OFF.\n";
     } else {
-        if (state != OFF) {
-            std::cout << "Machine is working, pls wait\n";
-        }
+        std::cout << "Cannot turn off during operation.\n";
     }
 }
-void Automata::coin(int money) {
+
+void Automata::coin(int amount) {
     if (state == WAIT || state == ACCEPT) {
-        cash += money;
+        cash += amount;
         state = ACCEPT;
-        getState();
+        std::cout << "Current balance: " << cash << "\n";
     } else {
-        std::cout << "Unable to do this action now\n";
+        std::cout << "Cannot insert coins now.\n";
     }
 }
-void Automata::choice(std::string drink) {
+
+void Automata::choice(const std::string &drink) {
     if (state == ACCEPT) {
-        if (find(menu.begin(), menu.end(), drink) == menu.end()) {
-            std::cout << "Unable to make this drink";
+        auto it = std::find(menu.begin(), menu.end(), drink);
+        if (it == menu.end()) {
+            std::cout << "Invalid selection.\n";
             cancel();
         } else {
             state = CHECK;
-            getState();
             check(drink);
         }
     }
 }
+
 void Automata::cancel() {
     if (state != OFF) {
+        returnChange();
         state = WAIT;
     }
 }
+
 STATES Automata::getState() {
-    std::cout << state;
     return state;
 }
+
 void Automata::getMenu() {
-    for (int i = 0; i < menu.size(); i++) {
-        std::cout << menu[i] << ' ' << prices[i] << '\n';
+    std::cout << "----- MENU -----\n";
+    for (size_t i = 0; i < menu.size(); ++i) {
+        std::cout << menu[i] << " - " << prices[i] << " coins\n";
     }
+    std::cout << "----------------\n";
 }
-void Automata::check(std::string drink) {
-    if (state == CHECK) {
-        auto it = find(menu.begin(), menu.end(), drink);
-        int index = distance(menu.begin(), it);
-        int price_of_coffee = prices[index];
-        if (cash < price_of_coffee) {
-            std::cout << "No money, top up your balance\n";
-            cancel();
-        } else {
-            cash -= price_of_coffee;
-            cook();
-        }
+
+int Automata::getCash() {
+    return cash;
+}
+
+void Automata::check(const std::string &drink) {
+    auto it = std::find(menu.begin(), menu.end(), drink);
+    size_t index = std::distance(menu.begin(), it);
+    int price = prices[index];
+
+    if (cash >= price) {
+        cash -= price;
+        cook();
     } else {
-        std::cout << "Ivalid state";
+        std::cout << "Insufficient funds.\n";
+        cancel();
     }
 }
+
 void Automata::cook() {
-    std::cout << "Started preparing. Pleas, wait\n";
-    auto start = std::chrono::steady_clock::now();
-    auto duration = std::chrono::seconds(5);
-    auto printing_state = std::chrono::seconds(2);
     state = COOK;
-    while (std::chrono::steady_clock::now() - start < duration) {
-        if (std::chrono::steady_clock::now() - start == printing_state)
-            getState();
-    }
-    std::cout << "Drink prepapred!\n";
+    std::cout << "Preparing your drink...\n";
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     finish();
 }
+
 void Automata::finish() {
+    std::cout << "Enjoy your drink!\n";
+    returnChange();
     state = WAIT;
-    getState();
 }
-void Automata::change() {
-    if (state == WAIT) {
-        if (cash > 0) {
-            std::cout << "Here is your change" << cash;
-            cash = 0;
-        }
+
+void Automata::returnChange() {
+    if (cash > 0) {
+        std::cout << "Returning " << cash << " coins as change.\n";
+        cash = 0;
     }
 }
-int Automata::getCash() { return cash; }

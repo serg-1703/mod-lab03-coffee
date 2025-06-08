@@ -1,171 +1,186 @@
 // Copyright 2022 GHA Test Team
-
 #include <gtest/gtest.h>
 #include "Automata.h"
 
-TEST(AutomataTest, InitialStateIsOFF) {
-    Automata a = Automata();
-    ASSERT_EQ(STATES::OFF, a.getState());
+// 1. Проверка начального состояния
+TEST(AutomataTest, InitialStateIsOff) {
+    Automata machine;
+    EXPECT_EQ(OFF, machine.getState());
 }
 
-TEST(AutomataTest, CannotInsertCoinWhenOFF) {
-    Automata a = Automata();
-    a.coin(10);
-    ASSERT_EQ(STATES::OFF, a.getState());
-    ASSERT_EQ(0, a.getCash());
+// 2. Включение автомата
+TEST(AutomataTest, TurnsOnCorrectly) {
+    Automata machine;
+    machine.on();
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, CannotChooseDrinkWhenOFF) {
-    Automata a = Automata();
-    a.choice("Cappucino");
-    ASSERT_EQ(STATES::OFF, a.getState());
+// 3. Попытка вставить монету в выключенный автомат
+TEST(AutomataTest, NoCoinInsertionWhenOff) {
+    Automata machine;
+    machine.coin(50);
+    EXPECT_EQ(OFF, machine.getState());
+    EXPECT_EQ(0, machine.getCash());
 }
 
-TEST(AutomataTest, CannotCancelWhenOFF) {
-    Automata a = Automata();
-    a.cancel();
-    ASSERT_EQ(STATES::OFF, a.getState());
-    ASSERT_EQ(0, a.getCash());
+// 4. Внесение денег в состоянии WAIT
+TEST(AutomataTest, AcceptsCoinsInWaitState) {
+    Automata machine;
+    machine.on();
+    machine.coin(30);
+    EXPECT_EQ(ACCEPT, machine.getState());
+    EXPECT_EQ(30, machine.getCash());
 }
 
-TEST(AutomataTest, TurnONTheAutomata) {
-    Automata a = Automata();
-    a.on();
-    ASSERT_EQ(STATES::WAIT, a.getState());
+// 5. Несколько монет подряд
+TEST(AutomataTest, MultipleCoinsInAcceptState) {
+    Automata machine;
+    machine.on();
+    machine.coin(20);
+    machine.coin(50);
+    EXPECT_EQ(ACCEPT, machine.getState());
+    EXPECT_EQ(70, machine.getCash());
 }
 
-TEST(AutomataTest, InsertFirstCoinInWAITState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(50);
-    ASSERT_EQ(STATES::ACCEPT, a.getState());
-    ASSERT_EQ(50, a.getCash());
+// 6. Отмена операции без внесения денег
+TEST(AutomataTest, CancelWithoutMoney) {
+    Automata machine;
+    machine.on();
+    machine.cancel();
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, InsertMultipleCoinsInWAITState) {
-    Automata a;
-    a.on();
-    a.coin(20);
-    a.coin(30);
-    ASSERT_EQ(STATES::ACCEPT, a.getState());
-    ASSERT_EQ(50, a.getCash());
+// 7. Отмена операции с деньгами (должна вернуть сдачу)
+TEST(AutomataTest, CancelWithMoney) {
+    Automata machine;
+    machine.on();
+    machine.coin(100);
+    machine.cancel();
+    EXPECT_EQ(WAIT, machine.getState());
+    EXPECT_EQ(0, machine.getCash());  // Сдача возвращена
 }
 
-TEST(AutomataTest, CancelInWAITStateNoCoins) {
-    Automata a = Automata();
-    a.on();
-    a.cancel();
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(0, a.getCash());
+// 8. Выбор несуществующего напитка
+TEST(AutomataTest, InvalidDrinkSelection) {
+    Automata machine;
+    machine.on();
+    machine.coin(50);
+    machine.choice("Fanta");  // Нет такого напитка
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, CancelInWAITStateWithCoins) {
-    Automata a = Automata();
-    a.on();
-    a.coin(50);
-    a.cancel();
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(50, a.getCash());
+// 9. Недостаточно денег для напитка
+TEST(AutomataTest, NotEnoughMoneyForDrink) {
+    Automata machine;
+    machine.on();
+    machine.coin(50);
+    machine.choice("Double Espresso");  // Стоит 100
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, ChooseDrinkInWAITStateNoCoins) {
-    Automata a = Automata();
-    a.on();
-    a.choice("Cappucino");
-    ASSERT_EQ(STATES::WAIT, a.getState());
+// 10. Успешная покупка (точно хватает денег)
+TEST(AutomataTest, ExactAmountForDrink) {
+    Automata machine;
+    machine.on();
+    machine.coin(80);
+    machine.choice("Black Coffee");  // Стоит 80
+    EXPECT_EQ(WAIT, machine.getState());
+    EXPECT_EQ(0, machine.getCash());
 }
 
-TEST(AutomataTest, InsertCoinAfterTurnONGoesToACCEPT) {
-    Automata a = Automata();
-    a.on();
-    a.coin(70);
-    ASSERT_EQ(STATES::ACCEPT, a.getState());
-    ASSERT_EQ(70, a.getCash());
+// 11. Покупка с остатком (должна вернуть сдачу)
+TEST(AutomataTest, DrinkPurchaseWithChange) {
+    Automata machine;
+    machine.on();
+    machine.coin(150);
+    machine.choice("Green Tea");  // Стоит 70
+    EXPECT_EQ(WAIT, machine.getState());
+    EXPECT_EQ(80, machine.getCash());  // 150 - 70 = 80 сдачи
 }
 
-TEST(AutomataTest, InsertMoreCoinsInACCEPTState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(60);
-    a.coin(40);
-    ASSERT_EQ(STATES::ACCEPT, a.getState());
-    ASSERT_EQ(100, a.getCash());
+// 12. Попытка выбора напитка без денег
+TEST(AutomataTest, ChooseDrinkWithoutMoney) {
+    Automata machine;
+    machine.on();
+    machine.choice("Hot Chocolate");
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, CancelInACCEPTState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(80);
-    a.cancel();
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(80, a.getCash());
+// 13. Выключение автомата в состоянии WAIT
+TEST(AutomataTest, TurnOffFromWaitState) {
+    Automata machine;
+    machine.on();
+    machine.off();
+    EXPECT_EQ(OFF, machine.getState());
 }
 
-TEST(AutomataTest, ChooseValidDrinkInACCEPTState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(150);
-    a.choice("Latte");
-    a.change();
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(0, a.getCash());
+// 14. Попытка выключения во время приготовления
+TEST(AutomataTest, CannotTurnOffWhileCooking) {
+    Automata machine;
+    machine.on();
+    machine.coin(100);
+    machine.choice("Double Espresso");
+    machine.off();  // Должно проигнорироваться
+    EXPECT_NE(OFF, machine.getState());
 }
 
-TEST(AutomataTest, ChooseInvalidDrinkInACCEPTState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(100);
-    a.choice("Americcano");
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(100, a.getCash());
+// 15. Проверка меню (количество позиций)
+TEST(AutomataTest, MenuHasFourItems) {
+    Automata machine;
+    machine.on();
+    testing::internal::CaptureStdout();
+    machine.getMenu();
+    std::string output = testing::internal::GetCapturedStdout();
+    EXPECT_EQ(4, std::count(output.begin(), output.end(), '\n'));
 }
 
-TEST(AutomataTest, CheckBalanceSufficientFundsGoesToCOOK) {
-    Automata a = Automata();
-    a.on();
-    a.coin(130);
-    a.choice("Cappucino");
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(10, a.getCash());
+// 16. Проверка состояния после приготовления
+TEST(AutomataTest, ReturnsToWaitAfterCooking) {
+    Automata machine;
+    machine.on();
+    machine.coin(100);
+    machine.choice("Double Espresso");
+    EXPECT_EQ(WAIT, machine.getState());
 }
 
-TEST(AutomataTest, FullCycleExactChangeEspresso) {
-    Automata a = Automata();
-    a.on();
-    a.coin(80);
-    a.choice("Espresso");
-    ASSERT_EQ(STATES::WAIT, a.getState());
-    ASSERT_EQ(80, a.getCash());
+// 17. Попытка выбора напитка в состоянии OFF
+TEST(AutomataTest, NoDrinkSelectionWhenOff) {
+    Automata machine;
+    machine.choice("Black Coffee");
+    EXPECT_EQ(OFF, machine.getState());
 }
 
-TEST(AutomataTest, TurnOFFFromWAITState) {
-    Automata a = Automata();
-    a.on();
-    a.off();
-    ASSERT_EQ(STATES::OFF, a.getState());
-    ASSERT_EQ(0, a.getCash());
+// 18. Внесение нулевой суммы
+TEST(AutomataTest, InsertZeroCoins) {
+    Automata machine;
+    machine.on();
+    machine.coin(0);
+    EXPECT_EQ(WAIT, machine.getState());  // Не переходит в ACCEPT
+    EXPECT_EQ(0, machine.getCash());
 }
 
-TEST(AutomataTest, TryTurnOFFFromACCEPTState) {
-    Automata a = Automata();
-    a.on();
-    a.coin(100);
-    a.off();
-    ASSERT_EQ(STATES::ACCEPT, a.getState());
-    ASSERT_EQ(100, a.getCash());
+// 19. Попытка отмены в состоянии OFF
+TEST(AutomataTest, CancelWhenOffDoesNothing) {
+    Automata machine;
+    machine.cancel();
+    EXPECT_EQ(OFF, machine.getState());
 }
 
-TEST(AutomataTest, TryTurnOFFFromOFFState) {
-    Automata a = Automata();
-    a.off();
-    ASSERT_EQ(STATES::OFF, a.getState());
+// 20. Полный цикл работы (включение, внесение денег, покупка, выключение)
+TEST(AutomataTest, FullWorkCycle) {
+    Automata machine;
+    machine.on();
+    machine.coin(90);
+    machine.choice("Hot Chocolate");  // Стоит 90
+    machine.off();
+    EXPECT_EQ(OFF, machine.getState());
 }
 
-TEST(AutomataTest, FullCycle) {
-    Automata a = Automata();
-    a.on();
-    a.coin(90);
-    a.choice("Espresso");
-    a.off();
-    ASSERT_EQ(STATES::OFF, a.getState());
+// 21. Проверка баланса после отмены
+TEST(AutomataTest, BalanceResetAfterCancel) {
+    Automata machine;
+    machine.on();
+    machine.coin(200);
+    machine.cancel();
+    EXPECT_EQ(0, machine.getCash());
 }

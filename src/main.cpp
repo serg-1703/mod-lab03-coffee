@@ -2,10 +2,15 @@
 #include "Automata.h"
 
 int main() {
-    Automata machine = Automata();
-    machine.on();
-    machine.getMenu();
-    machine.coin(120);
-    machine.coin(10);
-    machine.choice("Espresso");
+    Automata vendingMachine;
+    vendingMachine.on();
+    vendingMachine.getMenu();
+
+    vendingMachine.coin(50);
+    vendingMachine.coin(50);
+
+    vendingMachine.choice("Double Espresso");
+
+    vendingMachine.off();
+    return 0;
 }
