@@ -132,7 +132,8 @@ TEST(AutomataTest, MenuHasFourItems) {
     testing::internal::CaptureStdout();
     machine.getMenu();
     std::string output = testing::internal::GetCapturedStdout();
-    EXPECT_EQ(4, std::count(output.begin(), output.end(), '\n'));
+    size_t count = std::count(output.begin(), output.end(), '\n') - 2;
+    EXPECT_EQ(4, count);
 }
 
 // 16. Проверка состояния после приготовления

@@ -24,12 +24,16 @@ void Automata::off() {
         returnChange();
         state = OFF;
         std::cout << "Automata is now OFF.\n";
-    } else {
+    } else if (state != OFF) {
         std::cout << "Cannot turn off during operation.\n";
     }
 }
 
 void Automata::coin(int amount) {
+    if (amount <= 0) {
+        std::cout << "Invalid coin amount.\n";
+        return;
+    }
     if (state == WAIT || state == ACCEPT) {
         cash += amount;
         state = ACCEPT;
@@ -98,7 +102,6 @@ void Automata::cook() {
 
 void Automata::finish() {
     std::cout << "Enjoy your drink!\n";
-    returnChange();
     state = WAIT;
 }
 
