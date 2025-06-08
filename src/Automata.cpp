@@ -24,7 +24,9 @@ void Automata::off() {
         returnChange();
         state = OFF;
         std::cout << "Automata is now OFF.\n";
-    } else if (state != OFF) {
+    } else if (state == COOK) {
+        std::cout << "Cannot turn off while cooking!\n";
+    } else {
         std::cout << "Cannot turn off during operation.\n";
     }
 }

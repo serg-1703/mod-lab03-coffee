@@ -121,8 +121,9 @@ TEST(AutomataTest, CannotTurnOffWhileCooking) {
     machine.on();
     machine.coin(100);
     machine.choice("Double Espresso");
-    machine.off();  // Должно проигнорироваться
+    machine.off();
     EXPECT_NE(OFF, machine.getState());
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 // 15. Проверка меню (количество позиций)
